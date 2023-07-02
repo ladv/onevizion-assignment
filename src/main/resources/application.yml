@@ -1,0 +1,14 @@
+spring:
+  docker:
+    compose:
+      lifecycle-management: start-and-stop
+      start:
+        command: up
+      stop:
+        command: stop
+        timeout: 1m
+
+logging:
+  level:
+    com.onevizion: debug
+    web: debug
