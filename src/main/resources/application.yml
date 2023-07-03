@@ -1,14 +1,13 @@
 spring:
-  docker:
-    compose:
-      lifecycle-management: start-and-stop
-      start:
-        command: up
-      stop:
-        command: stop
-        timeout: 1m
+  datasource:
+    url: jdbc:postgresql://localhost:5435/books
+    username: postgres
+    password: p@ssw0rd
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
 
 logging:
   level:
-    com.onevizion: debug
+    com.onevizion: trace
     web: debug

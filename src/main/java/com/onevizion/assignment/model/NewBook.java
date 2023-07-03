@@ -1,10 +1,14 @@
 package com.onevizion.assignment.model;
 
-import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-public record NewBook(
-        @NotBlank String title,
-        @NotBlank String author,
-        String description
-) {
+import javax.validation.constraints.NotBlank;
+
+@Data
+public class NewBook {
+    @NotBlank
+    private String title;
+    @NotBlank
+    private String author;
+    private String description;
 }

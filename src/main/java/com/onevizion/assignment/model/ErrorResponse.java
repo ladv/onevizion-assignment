@@ -26,8 +26,10 @@ public class ErrorResponse {
         return new ErrorResponse("ValidationError", HttpStatus.BAD_REQUEST.value(), errors);
     }
 
-    public record Violation (
-        String fieldName,
-        String message
-    ) {}
+    @Getter
+    @RequiredArgsConstructor
+    public static class Violation {
+        private final String fieldName;
+        private final String message;
+    }
 }

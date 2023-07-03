@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -26,8 +27,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookControllerTest {
 
     @Container
-    @ServiceConnection
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres:15"));
+
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl());
+        registry.add("spring.datasource.username", () -> postgreSQLContainer.getUsername());
+        registry.add("spring.datasource.password", () -> postgreSQLContainer.getPassword());
+    }
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -58,17 +65,11 @@ class BookControllerTest {
     @Test
     @Order(2)
     void givenNewBook_whenEmptyAuthor_thenBadRequest() throws Exception {
+        String bodyContent = "{\"title\": \"1984\", \"description\": \"some description\"}";
         mockMvc.perform(
                         post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        """
-                                        {
-                                            "title": "1984",
-                                            "description": "some description"
-                                        }
-                                        """
-                                )
+                                .content(bodyContent)
                 )
                 .andExpect(status().isBadRequest());
     }
@@ -76,18 +77,11 @@ class BookControllerTest {
     @Test
     @Order(3)
     void givenNewBook_whenAllFieldsPresent_then201() throws Exception {
+        String bodyContent = "{\"title\": \"1984\", \"author\": \"G. Orwell\", \"description\": \"some description\"}";
         mockMvc.perform(
                         post("/api/books")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(
-                                        """
-                                        {
-                                            "title": "1984",
-                                            "author": "G. Orwell",
-                                            "description": "some description"
-                                        }
-                                        """
-                                )
+                                .content(bodyContent)
                 )
                 .andExpect(status().isCreated());
 

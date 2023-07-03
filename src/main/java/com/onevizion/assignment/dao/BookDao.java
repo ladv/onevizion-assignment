@@ -30,15 +30,15 @@ public class BookDao {
 
     public void createBook(NewBook newBook) {
         jdbcTemplate.execute(insert_BOOK, (PreparedStatementCallback<Boolean>) ps -> {
-            ps.setString(1, newBook.title());
-            ps.setString(2, newBook.description());
-            ps.setString(3, newBook.author());
+            ps.setString(1, newBook.getTitle());
+            ps.setString(2, newBook.getDescription());
+            ps.setString(3, newBook.getAuthor());
             return ps.execute();
         });
     }
 
     public Map<String, List<Book>> getBooksGroupedByAuthor() {
-        return getBooks().stream().collect(Collectors.groupingBy(Book::author));
+        return getBooks().stream().collect(Collectors.groupingBy(Book::getAuthor));
     }
 
     private Book rsExtractor(ResultSet rs, int rowNum) throws SQLException {
